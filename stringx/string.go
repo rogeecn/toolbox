@@ -1,9 +1,12 @@
 package stringx
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"regexp"
 	"strings"
+	"text/template"
 
 	"github.com/iancoleman/strcase"
 )
@@ -183,6 +186,7 @@ func (s *String) FindAllStringSubmatch() [][]string {
 	return s.pattern.FindAllStringSubmatch(s.s, -1)
 }
 
+// FindAllStringSubmatchIndex returns a slice of all successive matches of the Regexp and the index pairs for the matches.
 func (s *String) FindAllStringSubmatchIndex() [][]int {
 	return s.pattern.FindAllStringSubmatchIndex(s.s, -1)
 }
@@ -205,89 +209,90 @@ func (s *String) ReplaceAllLiteralString(repl string) *String {
 	return s
 }
 
-// Split
+// Split splits the string s around matches of the Regexp.
 func (s *String) Split(sep string) []string {
 	return strings.Split(s.s, sep)
 }
 
-// Equal
+// Equal compares two strings.
 func (s *String) Equal(s2 String) bool {
 	return s.s == s2.s
 }
 
-// EqualString
+// EqualString compares two strings.
 func (s *String) EqualString(s2 string) bool {
 	return s.s == s2
 }
 
-// Append
+// Append appends a string.
 func (s *String) Append(s2 String) *String {
 	s.s += s2.s
 	return s
 }
 
-// AppendString
+// AppendString appends a string.
 func (s *String) AppendString(s2 string) *String {
 	s.s += s2
 	return s
 }
 
-// Prepend
+// Prepend prepends a string.
 func (s *String) Prepend(s2 String) *String {
 	s.s = s2.s + s.s
 	return s
 }
 
-// PrependString
+// PrependString prepends a string.
 func (s *String) PrependString(s2 string) *String {
 	s.s = s2 + s.s
 	return s
 }
 
-// Insert
+// Insert inserts a string at the specified index.
 func (s *String) Insert(index int, s2 String) *String {
 	s.s = s.s[:index] + s2.s + s.s[index:]
 	return s
 }
 
-// InsertString
+// InsertString inserts a string at the specified index.
 func (s *String) InsertString(index int, s2 string) *String {
 	s.s = s.s[:index] + s2 + s.s[index:]
 	return s
 }
 
-// Remove
+// Remove removes the specified number of characters from the specified index.
 func (s *String) Remove(index int, length int) *String {
 	s.s = s.s[:index] + s.s[index+length:]
 	return s
 }
 
-// RemoveAll
+// RemoveAll removes all characters.
 func (s *String) RemoveAll() *String {
 	s.s = ""
 	return s
 }
 
+// Bytes returns a slice of bytes.
 func (s *String) Bytes() []byte {
 	return []byte(s.s)
 }
 
-// JsonUnmarshal
+// JsonUnmarshal unmarshals the JSON-encoded data and stores the result in the value pointed to by v.
 func (s *String) JsonUnmarshal(v interface{}) error {
 	return json.Unmarshal(s.Bytes(), v)
 }
 
-// FindIndex
+// FindIndex returns the index of the first instance of substr in s, or -1 if substr is not present in s.
 func (s *String) FindIndex(sub string) int {
 	return strings.Index(s.s, sub)
 }
 
-// FindLastIndex
+// FindLastIndex returns the index of the last instance of substr in s, or -1 if substr is not present in s.
 func (s *String) FindLastIndex(sub string) int {
 	return strings.LastIndex(s.s, sub)
 }
 
-// Padding
+// Padding adds characters to a string until the specified length is reached.
 func (s *String) Padding(length int, padStr string) *String {
 	if s.Len() >= length {
 		return s
@@ -298,4 +303,22 @@ func (s *String) Padding(length int, padStr string) *String {
 		s.s += padStr
 	}
 	return s
+}
+
+// Format formats according to a format specifier and returns the string as a value that satisfies valuer.
+func (s *String) Format(args ...interface{}) *String {
+	s.s = fmt.Sprintf(s.s, args...)
+	return s
+}
+
+// Render renders a template.
+func (s *String) Render(data interface{}) (*String, error) {
+	t := template.Must(template.New("t").Parse(s.s))
+	var buf bytes.Buffer
+	if err := t.Execute(&buf, data); err != nil {
+		return nil, err
+	}
+
+	s.s = buf.String()
+	return s, nil
 }
