@@ -10,7 +10,7 @@ var (
 	siUnits = []string{"", "K", "M", "G", "T", "P", "E"}
 )
 
-func ToString(n int64, scale int64, suffix, baseSuffix string) string {
+func ToString(n, scale int64, suffix, baseSuffix string) string {
 	mn := len(siUnits)
 	out := make([]string, mn)
 	for i, m := range siUnits {

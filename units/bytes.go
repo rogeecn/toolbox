@@ -205,5 +205,5 @@ func ParseStrictBytes(s string) (int64, error) {
 	if err != nil {
 		n, err = ParseUnit(s, metricBytesUnitMap)
 	}
-	return int64(n), err
+	return n, err
 }

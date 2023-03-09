@@ -261,7 +261,7 @@ func (s *String) InsertString(index int, s2 string) *String {
 }
 
 // Remove removes the specified number of characters from the specified index.
-func (s *String) Remove(index int, length int) *String {
+func (s *String) Remove(index, length int) *String {
 	s.s = s.s[:index] + s.s[index+length:]
 	return s
 }
