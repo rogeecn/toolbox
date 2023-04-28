@@ -1,4 +1,4 @@
-package toolbox
+package tl
 
 // Must panics if err is not nil.
 func Must(err error) {

@@ -2,6 +2,9 @@ package stringx
 
 import (
 	"bytes"
+	"crypto/md5"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"regexp"
@@ -321,4 +324,33 @@ func (s *String) Render(data interface{}) (*String, error) {
 
 	s.s = buf.String()
 	return s, nil
+}
+
+// cal string md5
+func (s *String) Md5() *String {
+	s.s = fmt.Sprintf("%x", md5.Sum(s.Bytes()))
+	return s
+}
+
+// cal string sha256
+func (s *String) Sha256() *String {
+	s.s = fmt.Sprintf("%x", sha256.Sum256(s.Bytes()))
+	return s
+}
+
+// base 64 encode
+func (s *String) Base64Encode() *String {
+	s.s = base64.StdEncoding.EncodeToString(s.Bytes())
+	return s
+}
+
+// base 64 decode
+func (s *String) Base64Decode() *String {
+	b, err := base64.StdEncoding.DecodeString(s.s)
+	if err != nil {
+		return s
+	}
+
+	s.s = string(b)
+	return s
 }
